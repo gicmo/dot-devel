@@ -1,0 +1,4 @@
+#!/bin/sh 
+ 
+sed -i 's/enforcing/permissive/' /etc/selinux/config
+fixfiles -F onboot

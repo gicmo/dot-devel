@@ -1,0 +1,31 @@
+[Distribution]
+Distribution=fedora
+Release=30
+ 
+[Output]
+Format=raw_gpt
+Bootable=yes
+KernelCommandLine=printk.devkmsg=on
+
+[Partitions]
+RootSize=3G
+
+[Packages]
+Packages=
+	clang
+	findutils
+	git
+	glibc-devel
+	libselinux-utils
+	llvm
+	make
+	policycoreutils
+	procps-ng
+	rsync
+	selinux-policy
+	selinux-policy-targeted
+	setools-console
+        gcc
+
+BuildDirectory=mkosi.builddir
+Cache=mkosi.cache
