@@ -1,3 +1,6 @@
 mkdir -p "$DESTDIR"/kernel
 pushd tools/testing/selftests/
 ./kselftest_install.sh "$DESTDIR"/kernel
+
+mkdir -p "$DESTDIR"/kernel/bin
+find . -type f -executable -not -name "*.sh" -exec cp {} "$DESTDIR"/kernel/bin \;
