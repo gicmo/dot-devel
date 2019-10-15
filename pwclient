@@ -1,0 +1,8 @@
+[options]
+default=lkml
+
+[lkml]
+url = https://lore.kernel.org/patchwork/xmlrpc/
+
+[linux-usb]
+url = https://patchwork.kernel.org/xmlrpc/
