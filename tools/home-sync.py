@@ -75,6 +75,7 @@ def main():
         authorize_host(rsync, args.sshkey)
 
     rsync("~/.homesick/")
+    rsync("~/.config/goa-1.0/accounts.conf")
     rsync("~/.config/evolution/sources/")
     rsync("~/.local/share/keyrings/")
     rsync("~/.local/share/fonts/")
