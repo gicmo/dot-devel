@@ -15,16 +15,18 @@ def run_rsync(remote, source, target=None, delete=True):
     if not target:
         target = source
 
-    source = pathlib.Path(os.path.expanduser(source))
+    sp = pathlib.Path(os.path.expanduser(source))
+    source = os.fspath(sp)
 
-    if not source.exists():
+    if not sp.exists():
         print(f"[S] {source}")
         return
-    elif source.is_dir():
+    if sp.is_dir():
         print(f"[D] {source}")
 
         subprocess.run(["ssh", remote, "mkdir", "-p", target],
-                        check=False)
+                       check=False)
+        source += "/"
 
     cmd = [
         "rsync",
@@ -35,7 +37,7 @@ def run_rsync(remote, source, target=None, delete=True):
         cmd += ["--delete"]
 
     cmd += [
-        os.fspath(source),
+        source,
         f"{remote}:{target}"
     ]
     subprocess.run(cmd, encoding="utf-8", check=True)
@@ -75,7 +77,7 @@ def main():
     rsync("~/.homesick/")
     rsync("~/.config/evolution/sources/")
     rsync("~/.local/share/keyrings/")
-    rsync("~/.local/share/fonts")
+    rsync("~/.local/share/fonts/")
 
     for app in args.appdata:
         rsync(f"~/.var/app/{app}")
