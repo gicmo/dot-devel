@@ -10,6 +10,15 @@ import subprocess
 import sys
 
 
+ITEMS = [
+    "~/.homesick/",
+    "~/.config/goa-1.0/accounts.conf",
+    "~/.config/evolution/sources/",
+    "~/.local/share/keyrings/",
+    "~/.local/share/fonts/",
+]
+
+
 def run_rsync(remote, source, target=None, delete=True):
 
     if not target:
@@ -74,11 +83,8 @@ def main():
     if args.sshkey:
         authorize_host(rsync, args.sshkey)
 
-    rsync("~/.homesick/")
-    rsync("~/.config/goa-1.0/accounts.conf")
-    rsync("~/.config/evolution/sources/")
-    rsync("~/.local/share/keyrings/")
-    rsync("~/.local/share/fonts/")
+    for item in ITEMS:
+        rsync(item)
 
     for app in args.appdata:
         rsync(f"~/.var/app/{app}")
