@@ -61,7 +61,7 @@ def main():
     parser.add_argument("--no-delete", dest="delete", default=True,
                         action="store_false",
                         help="Delete remote files that don't exist locally")
-    parser.add_argument("--appdata", metavar="APP", type=str, nargs="*",
+    parser.add_argument("--appdata", metavar="APP", type=str, nargs="*", default=[],
                         help="Copy flatpak application data")
     args = parser.parse_args(sys.argv[1:])
 
