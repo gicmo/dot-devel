@@ -92,6 +92,8 @@ def defaults(arg, default):
 
 
 def main():
+    apps = [d.name for d in os.scandir(os.path.expanduser("~/.var/app/"))]
+
     parser = argparse.ArgumentParser(description="sync bare bones $HOME")
     parser.add_argument("dest", metavar="DEST", help="destination computer")
     parser.add_argument("--dry-run", dest="dry", default=False,
@@ -102,7 +104,8 @@ def main():
     parser.add_argument("--no-delete", dest="delete", default=True,
                         action="store_false",
                         help="Delete remote files that don't exist locally")
-    parser.add_argument("--appdata", metavar="APP", type=str, nargs="*", default=[],
+    parser.add_argument("--appdata", metavar="APP", type=str, nargs="*", default=None,
+                        choices=apps[:] + [[]], action="append",
                         help="Copy flatpak application data")
     parser.add_argument("--data", metavar="DATA", type=str, nargs="*", default=None,
                         choices=ITEMS.keys(), action="append",
@@ -121,7 +124,7 @@ def main():
         for item in ITEMS[data]:
             rsync(item)
 
-    for app in args.appdata:
+    for app in defaults(args.appdata, apps):
         rsync(f"~/.var/app/{app}")
 
 
