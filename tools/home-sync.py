@@ -19,7 +19,7 @@ ITEMS = [
 ]
 
 
-def run_rsync(remote, source, target=None, delete=True):
+def run_rsync(remote, source, target=None, delete=True, dry=False):
 
     if not target:
         target = source
@@ -33,8 +33,9 @@ def run_rsync(remote, source, target=None, delete=True):
     if sp.is_dir():
         print(f"[D] {source}")
 
-        subprocess.run(["ssh", remote, "mkdir", "-p", target],
-                       check=False)
+        if not dry:
+            subprocess.run(["ssh", remote, "mkdir", "-p", target],
+                           check=False)
         source += "/"
 
     cmd = [
@@ -49,6 +50,11 @@ def run_rsync(remote, source, target=None, delete=True):
         source,
         f"{remote}:{target}"
     ]
+
+    if dry:
+        print(cmd)
+        return
+
     subprocess.run(cmd, encoding="utf-8", check=True)
 
 
@@ -67,6 +73,9 @@ def authorize_host(rsync, keyfile):
 def main():
     parser = argparse.ArgumentParser(description="sync bare bones $HOME")
     parser.add_argument("dest", metavar="DEST", help="destination computer")
+    parser.add_argument("--dry-run", dest="dry", default=False,
+                        action="store_true",
+                        help="Show what would happen")
     parser.add_argument("--ssh-key", metavar="KEYFILE", dest="sshkey", default=None,
                         help="Enable ssh key auth")
     parser.add_argument("--no-delete", dest="delete", default=True,
@@ -78,7 +87,7 @@ def main():
 
     dest = args.dest
     print(f"[T] {dest}")
-    rsync = functools.partial(run_rsync, args.dest, delete=args.delete)
+    rsync = functools.partial(run_rsync, args.dest, delete=args.delete, dry=args.dry)
 
     if args.sshkey:
         authorize_host(rsync, args.sshkey)
