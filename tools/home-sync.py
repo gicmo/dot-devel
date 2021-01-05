@@ -10,13 +10,21 @@ import subprocess
 import sys
 
 
-ITEMS = [
-    "~/.homesick/",
-    "~/.config/goa-1.0/accounts.conf",
-    "~/.config/evolution/sources/",
-    "~/.local/share/keyrings/",
-    "~/.local/share/fonts/",
-]
+ITEMS = {
+    "homesick": [
+        "~/.homesick/"
+    ],
+    "accounts": [
+        "~/.config/goa-1.0/accounts.conf",
+        "~/.config/evolution/sources/",
+    ],
+    "keyrings": [
+        "~/.local/share/keyrings/",
+    ],
+    "fonts": [
+        "~/.local/share/fonts/"
+    ],
+}
 
 
 def run_rsync(remote, source, target=None, delete=True, dry=False):
@@ -70,6 +78,19 @@ def authorize_host(rsync, keyfile):
         rsync(os.fspath(sshdir) + "/", "~/.ssh/", delete=False)
 
 
+def flatten(lst):
+    return list(x for l in lst for x in l)
+
+
+def defaults(arg, default):
+    if arg is None:
+        return []
+    arg = flatten(arg)
+    if not arg:
+        arg = default
+    return arg
+
+
 def main():
     parser = argparse.ArgumentParser(description="sync bare bones $HOME")
     parser.add_argument("dest", metavar="DEST", help="destination computer")
@@ -83,6 +104,9 @@ def main():
                         help="Delete remote files that don't exist locally")
     parser.add_argument("--appdata", metavar="APP", type=str, nargs="*", default=[],
                         help="Copy flatpak application data")
+    parser.add_argument("--data", metavar="DATA", type=str, nargs="*", default=None,
+                        choices=ITEMS.keys(), action="append",
+                        help="Copy specified data")
     args = parser.parse_args(sys.argv[1:])
 
     dest = args.dest
@@ -92,8 +116,10 @@ def main():
     if args.sshkey:
         authorize_host(rsync, args.sshkey)
 
-    for item in ITEMS:
-        rsync(item)
+    for data in defaults(args.data, ITEMS):
+        print(data)
+        for item in ITEMS[data]:
+            rsync(item)
 
     for app in args.appdata:
         rsync(f"~/.var/app/{app}")
