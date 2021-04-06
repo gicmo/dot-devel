@@ -1,0 +1,25 @@
+FROM fedora:latest
+
+# additional software
+RUN dnf -y update && \
+    dnf -y install \
+    findutils \
+    fish \
+    git \
+    && \
+    dnf clean all
+
+# user configuration
+ARG USERNAME=gicmo
+ARG UID=1000
+ARG GID=$UID
+
+RUN groupadd --gid $GID $USERNAME && \
+    useradd --uid $UID --gid $GID -m $USERNAME && \
+    echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME
+
+USER $USERNAME
+
+# ready, steady, go!
+CMD ["/usr/bin/fish"]
