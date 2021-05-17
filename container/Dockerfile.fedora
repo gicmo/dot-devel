@@ -3,9 +3,12 @@ FROM fedora:latest
 # additional software
 RUN dnf -y update && \
     dnf -y install \
+    fedpkg \
     findutils \
     fish \
     git \
+    krb5-workstation \
+    make \
     && \
     dnf clean all
 
