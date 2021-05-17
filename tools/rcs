@@ -1,0 +1,45 @@
+#!/usr/bin/python3
+import argparse
+import os
+import subprocess
+import sys
+
+
+def extract_name(full_id: str) -> str:
+    res = full_id.split("-")
+    return res[1]
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Open a shell in a remote vscode container')
+    parser.add_argument('name', metavar='NAME', type=str,
+                        help='Name of the image')
+
+    args = parser.parse_args()
+    r = subprocess.run(["docker", "ps", "--format", "{{.Image}}:{{.ID}}"],
+                       check=True,
+                       encoding="utf-8",
+                       stdout=subprocess.PIPE)
+
+    res = r.stdout.strip()
+    containers = map(lambda l: l.split(":"), res.split("\n"))
+    containers = filter(lambda i: i[0].startswith("vsc-"), containers)
+    containers = map(lambda i: (extract_name(i[0]), i[1]), containers)
+    containers = dict(containers)
+    
+    name = containers.get(args.name)
+    if name == None:
+        print(f"'{name}' not found")
+        sys.exit(1)
+
+    shell_path = os.getenv("SHELL", "/bin/fish")
+    shell_name = os.path.basename(shell_path)
+    shell_path = os.path.join("/bin", shell_name)
+
+    r = subprocess.run(["docker", "exec", "-it", name, shell_path],
+                       check=True,
+                       encoding="utf-8")
+
+
+if __name__ == '__main__':
+    main()
