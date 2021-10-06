@@ -29,7 +29,7 @@ def main():
     
     name = containers.get(args.name)
     if name == None:
-        print(f"'{name}' not found")
+        print(f"'{args.name}' not found")
         sys.exit(1)
 
     shell_path = os.getenv("SHELL", "/bin/fish")
