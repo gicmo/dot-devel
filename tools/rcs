@@ -6,8 +6,8 @@ import sys
 
 
 def extract_name(full_id: str) -> str:
-    res = full_id.split("-")
-    return res[1]
+    idx = full_id.rindex("-")
+    return full_id[4:idx]
 
 
 def main():
